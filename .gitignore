@@ -1,3 +1,5 @@
+*.~
+*#*
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
@@ -20,3 +22,74 @@
 # Go workspace file
 go.work
 go.work.sum
+
+# Ignore the entire .idea folder, but then specify the files to keep
+.idea/*
+
+# Keep the following files
+!.idea/description.*
+!.idea/modules.xml
+!.idea/workspace.xml
+!.idea/project.iml
+!.idea/vcs.xml
+!.idea/runConfigurations/
+!.idea/fileTemplates/
+
+# Ignore the following files in the .idea directory
+.idea/**/tasks.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/workspace.xml
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/gradle.xml
+.idea/**/libraries/
+
+# Ignore build directories
+out/
+target/
+build/
+
+# Ignore Goland specific files
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/libraries
+
+# Ignore Go build files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Ignore dependency directories
+vendor/
+Godeps/
+
+# Ignore IDE specific files
+.DS_Store
+*.swp
+*.swo
+*.bak
+
+# Ignore log files
+*.log
+
+# Ignore Go environment variables
+.env
+.env.local
+
+# Ignore other common files
+node_modules/
+*.pyc
+*.pyo
+__pycache__/
+*.class
