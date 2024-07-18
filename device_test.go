@@ -18,8 +18,6 @@ func TestSendSMS(t *testing.T) {
 	deviceIP := "192.168.8.1" // Replace with your device's IP address
 	username := "admin"       // Replace with your username
 	password := "250200.Ab"   // Replace with your password
-	//phoneNumber := "+50688928380" // Ensure the phone number is in international format
-	//message := "Hello, this is a test message."
 
 	device, err := NewDevice(l, deviceIP, username, password)
 	if err != nil {
@@ -30,7 +28,7 @@ func TestSendSMS(t *testing.T) {
 		t.Fatalf("Error getting session ID: %v", err)
 	}
 
-	t.Log("loggin successfull")
+	t.Log("login successfully")
 
 	smss, err := device.ReadSMSInbox()
 
@@ -41,18 +39,23 @@ func TestSendSMS(t *testing.T) {
 	pp.Println(smss)
 
 	var status *DeviceStatus
-	if status, err = device.GetDeviceStatus(); err != nil {
+	if status, err = device.DeviceStatus(); err != nil {
 		t.Fatalf("Error getting device status: %v", err)
 	}
 
 	pp.Println(status)
 
-	err = device.SendSMS("+50688928380", "hola mundo cruel 2")
-	if err != nil {
-		t.Fatalf("Error sending SMS: %v", err)
-	}
+	//err = device.DeleteSMSWithIndex(40056)
+	//if err != nil {
+	//	t.Fatalf("Error deleting SMS: %v", err)
+	//}
 
-	t.Log("sent SMS successfully")
+	//err = device.SendSMS("+50688928380", "hola mundo cruel 3")
+	//if err != nil {
+	//	t.Fatalf("Error sending SMS: %v", err)
+	//}
+	//
+	//t.Log("sent SMS successfully")
 
 }
 

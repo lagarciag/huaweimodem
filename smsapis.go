@@ -48,7 +48,23 @@ type SMSMessage struct {
 	Date    string   `xml:"Date"`    // Date is the date the message was sent or received.
 }
 
+// DeleteSMSRequest represents the XML request to delete an SMS message.
+type DeleteSMSRequest struct {
+	XMLName xml.Name `xml:"request"`
+	Index   int      `xml:"Index"`
+}
+
+// DeleteSMSResponse represents the XML response after deleting an SMS message.
+type DeleteSMSResponse struct {
+	XMLName xml.Name `xml:"response"`
+	Result  string   `xml:"result"`
+}
+
 func (d *Device) ReadSMSInbox() (*SMSList, error) {
+
+	if d.sessionID == "" {
+		return nil, fmt.Errorf("you must login first")
+	}
 
 	err := d.getSesTokInfo()
 	if err != nil {
@@ -91,6 +107,9 @@ func (d *Device) ReadSMSInbox() (*SMSList, error) {
 }
 
 func (d *Device) SendSMS(phoneNumber, message string) error {
+	if d.sessionID == "" {
+		return fmt.Errorf("you must login first")
+	}
 
 	err := d.getSesTokInfo()
 	if err != nil {
@@ -145,4 +164,87 @@ func (d *Device) SendSMS(phoneNumber, message string) error {
 	} else {
 		return fmt.Errorf("unexpected response format")
 	}
+}
+
+// DeleteSMSWithIndex deletes the first SMS message in the inbox.
+func (d *Device) DeleteSMSWithIndex(index int) error {
+	if d.sessionID == "" {
+		return fmt.Errorf("you must login first")
+	}
+
+	if messages, err := d.ReadSMSInbox(); err == nil {
+		if len(messages.Messages) == 0 {
+			return fmt.Errorf("no messages to delete")
+		}
+
+		foundIndex := false
+		for _, message := range messages.Messages {
+			if message.Index == index {
+				foundIndex = true
+				break
+			}
+		}
+		if !foundIndex {
+			return fmt.Errorf("message with index %d not found", index)
+		}
+
+	} else {
+		return fmt.Errorf("failed to read SMS inbox: %w", err)
+	}
+
+	err := d.getSesTokInfo()
+	if err != nil {
+		return fmt.Errorf("failed to get SesTokInfo: %w", err)
+	}
+
+	deleteRequest := DeleteSMSRequest{Index: index}
+	xmlData, err := xml.Marshal(deleteRequest)
+	if err != nil {
+		return fmt.Errorf("failed to marshal delete request: %w", err)
+	}
+
+	d.l.Debug("xmlData: ", string(xmlData))
+
+	url := fmt.Sprintf(UrlDeleteSMS, d.deviceIP)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(xmlData))
+	if err != nil {
+		return fmt.Errorf("failed to create delete SMS request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", httpContentType)
+	req.Header.Set("Cookie", d.sessionID)
+	req.Header.Set("__RequestVerificationToken", d.token)
+
+	resp, err := d.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send delete SMS request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("delete SMS request failed with status code %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read delete SMS response: %w", err)
+	}
+
+	var deleteResponse DeleteSMSResponse
+	if err := xml.Unmarshal(body, &deleteResponse); err != nil {
+		var errorResponse ErrorResponse
+		if err = xml.Unmarshal(body, &errorResponse); err == nil {
+			return fmt.Errorf("error code %s, message: %s", errorResponse.ErrorCode, errorResponse.Message)
+		}
+
+		return fmt.Errorf("failed to unmarshal delete SMS response: %w", err)
+	}
+
+	if deleteResponse.Result != "" {
+		return fmt.Errorf("failed to delete SMS, result: %s", deleteResponse.Result)
+	}
+
+	d.l.Debug("SMS deleted successfully")
+
+	return nil
 }

@@ -56,6 +56,13 @@ func (d *Device) Login() (err error) {
 	if err := xml.Unmarshal(body, &errorResponse); err == nil {
 		return fmt.Errorf("error code %s", errorResponse.ErrorCode)
 	}
+
+	d.l.Debug("login successfully")
+	d.deviceStatus, err = d.DeviceStatus()
+	if err != nil {
+		return fmt.Errorf("failed to get device status: %w", err)
+	}
+
 	return nil
 }
 
