@@ -60,8 +60,16 @@ type DeleteSMSResponse struct {
 	Result  string   `xml:"result"`
 }
 
+// ReadSMSInbox retrieves the SMS messages from the device's inbox.
+// It first checks if the user is logged in by verifying the sessionID.
+// If not logged in, it returns an error.
+// Then it refreshes the session and token information, and sends a request to the SMS list endpoint.
+// The response is parsed and unmarshaled into an SMSList struct, which is returned.
+//
+// Returns:
+//   - A pointer to the SMSList struct containing the SMS messages.
+//   - An error if any step in the process fails.
 func (d *Device) ReadSMSInbox() (*SMSList, error) {
-
 	if d.sessionID == "" {
 		return nil, fmt.Errorf("you must login first")
 	}
@@ -106,6 +114,18 @@ func (d *Device) ReadSMSInbox() (*SMSList, error) {
 	return &smsList, nil
 }
 
+// SendSMS sends an SMS message to the specified phone number.
+// It first checks if the user is logged in by verifying the sessionID.
+// If not logged in, it returns an error.
+// Then it refreshes the session and token information, constructs the SMS message,
+// and sends it to the SMS send endpoint.
+//
+// Parameters:
+//   - phoneNumber: The phone number to send the SMS to.
+//   - message: The message content to be sent.
+//
+// Returns:
+//   - An error if any step in the process fails.
 func (d *Device) SendSMS(phoneNumber, message string) error {
 	if d.sessionID == "" {
 		return fmt.Errorf("you must login first")
@@ -166,7 +186,17 @@ func (d *Device) SendSMS(phoneNumber, message string) error {
 	}
 }
 
-// DeleteSMSWithIndex deletes the first SMS message in the inbox.
+// DeleteSMSWithIndex deletes an SMS message with the specified index from the inbox.
+// It first checks if the user is logged in by verifying the sessionID.
+// If not logged in, it returns an error.
+// Then it reads the SMS inbox to ensure the message with the given index exists.
+// If the message exists, it sends a request to the delete SMS endpoint to remove the message.
+//
+// Parameters:
+//   - index: The index of the SMS message to be deleted.
+//
+// Returns:
+//   - An error if any step in the process fails.
 func (d *Device) DeleteSMSWithIndex(index int) error {
 	if d.sessionID == "" {
 		return fmt.Errorf("you must login first")

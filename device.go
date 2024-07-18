@@ -94,14 +94,28 @@ type Device struct {
 	deviceStatus *DeviceStatus
 }
 
+// DeviceIP returns the IP address of the device.
 func (d *Device) DeviceIP() string {
 	return d.deviceIP
 }
 
+// User returns the username used to authenticate with the device.
 func (d *Device) User() string {
 	return d.user
 }
 
+// NewDevice creates a new instance of Device with the specified logger, device IP, username, and password.
+// It initializes the Device struct and sets up an HTTP client with a cookie jar to manage session cookies.
+//
+// Parameters:
+//   - l: A SugaredLogger instance from the zap logging package.
+//   - deviceIP: The IP address of the device to connect to.
+//   - user: The username for authentication.
+//   - password: The password for authentication.
+//
+// Returns:
+//   - A pointer to the initialized Device instance.
+//   - An error if the device could not be created.
 func NewDevice(l *zap.SugaredLogger, deviceIP, user, password string) (*Device, error) {
 	d := Device{
 		l:        l,
@@ -109,8 +123,10 @@ func NewDevice(l *zap.SugaredLogger, deviceIP, user, password string) (*Device, 
 		user:     user,
 	}
 
+	// Hash and encode the password
 	d.password = d.hashAndEncodePassword(password)
 
+	// Initialize HTTP client with a cookie jar
 	client := &http.Client{
 		Jar: nil, // cookie jar to store and manage cookies
 	}
