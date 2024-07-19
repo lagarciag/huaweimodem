@@ -14,6 +14,6 @@ Package huaweimodem provides a Go library for interacting with Huawei LTE WiFi r
 
 To install the Huawei Modem Go library, use the following command:
 
-	go get github.com/lagarciag/huaweimoden
+	go get github.com/lagarciag/huaweimodem
 */
 package huaweimodem

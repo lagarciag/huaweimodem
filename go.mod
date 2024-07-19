@@ -1,4 +1,4 @@
-module github.com/lagarciag/huaweimoden
+module github.com/lagarciag/huaweimodem
 
 go 1.22.1
 

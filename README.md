@@ -16,7 +16,7 @@ The Huawei Modem Go library provides a simple and convenient way to interact wit
 To install the Huawei Modem Go library, use the following command:
 
 ```sh
-go get github.com/lagarciag/huaweimoden
+go get github.com/lagarciag/huaweimodem
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"github.com/lagarciag/huaweimoden/device"
+	device "github.com/lagarciag/huaweimodem"
 	"go.uber.org/zap"
 )
 
